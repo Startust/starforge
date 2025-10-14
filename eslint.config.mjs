@@ -1,35 +1,69 @@
-// @ts-check
-import eslint from '@eslint/js';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import globals from 'globals';
-import tseslint from 'typescript-eslint';
+import js from '@eslint/js';
+import ts from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
+import importPlugin from 'eslint-plugin-import';
+import unusedImports from 'eslint-plugin-unused-imports';
+import prettier from 'eslint-config-prettier';
 
-export default tseslint.config(
+/**
+ * ESLint Flat Config for NestJS + TypeScript
+ * - 和前端 Prettier/Import 风格一致
+ * - 无 React 依赖，适配 Node 环境
+ */
+export default [
   {
-    ignores: ['eslint.config.mjs'],
+    ignores: ['dist', 'node_modules'],
   },
-  eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
-  eslintPluginPrettierRecommended,
+  js.configs.recommended,
   {
+    files: ['**/*.ts', '**/*.js'],
     languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.jest,
-      },
-      ecmaVersion: 5,
-      sourceType: 'module',
+      parser: tsParser,
       parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
+        project: ['./tsconfig.json'],
+        sourceType: 'module',
+        ecmaVersion: 2021,
+      },
+      globals: {
+        console: true,
+        process: true,
+        __dirname: true,
+        module: true,
       },
     },
-  },
-  {
+    plugins: {
+      '@typescript-eslint': ts,
+      import: importPlugin,
+      'unused-imports': unusedImports,
+    },
     rules: {
+      ...ts.configs.recommended.rules,
+
+      // ✅ Import 顺序与分组
+      'import/order': [
+        'error',
+        {
+          groups: [['builtin', 'external'], 'internal', ['parent', 'sibling', 'index']],
+          'newlines-between': 'always',
+          alphabetize: { order: 'asc', caseInsensitive: true },
+        },
+      ],
+
+      // 🚫 未使用的 import/变量
+      'unused-imports/no-unused-imports': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+
+      // 🧠 TS 基础规则微调
+      '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn'
+      '@typescript-eslint/no-var-requires': 'off',
+
+      // 🧩 Import 解析
+      'import/no-unresolved': 'error',
     },
   },
-);
+  prettier,
+];
