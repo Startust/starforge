@@ -1,6 +1,3 @@
-import { ExpressAdapter } from '@bull-board/express';
-import { BullBoardModule } from '@bull-board/nestjs';
-import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -33,15 +30,6 @@ import { WebhookModule } from './webhook/webhook.module';
         `.env.${process.env.NODE_ENV || 'development'}`, // Fallback to the default env file
         '.env',
       ],
-    }),
-    BullModule.forRoot({
-      connection: {
-        url: process.env.REDIS_URL,
-      },
-    }),
-    BullBoardModule.forRoot({
-      route: '/admin/queues',
-      adapter: ExpressAdapter,
     }),
     PrismaModule,
     NotificationModule,

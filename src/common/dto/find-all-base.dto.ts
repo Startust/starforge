@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsOptional, IsString, IsNumber, IsEnum, ValidateNested } from 'class-validator';
 
-import { TransformJsonArray } from '../../utils/transform-json-array';
+import { TransformJsonArray } from '../utils/transform-json-array';
 
 export class SortFieldDto {
   @IsString()

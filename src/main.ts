@@ -3,7 +3,8 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
-import { ResponseInterceptor } from './common/interceptor/response.interceptor';
+import { AllExceptionsFilter } from './common/filter/all-exceptions.filter';
+import { ResponseTransformInterceptor } from './common/interceptor/response-transform.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -20,7 +21,8 @@ async function bootstrap() {
   );
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-  app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalInterceptors(new ResponseTransformInterceptor());
+  app.useGlobalFilters(new AllExceptionsFilter());
   app.enableCors();
 
   console.log('Connecting to Redis:', process.env.REDIS_URL);
