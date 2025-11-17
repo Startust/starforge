@@ -1,98 +1,121 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Starforge
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Overview
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Starforge is a modular backend service built with [NestJS](https://nestjs.com/) and [TypeScript](https://www.typescriptlang.org/).  It provides a foundation for web applications that need cloud uploads, email notifications, task scheduling, and integration with external APIs.  The project is configured with a sensible default architecture and Swagger API documentation for easy exploration.
 
-## Description
+## Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Modular design** – separates functionality into clean modules including upload, notifications, queues, tasks, webhooks and integrations.
+- **Cloud file uploads** – generates pre‑signed URLs and stores files in AWS S3 buckets using the AWS SDK.
+- **Email notifications** – sends HTML emails through Gmail’s API and can render MJML templates for dynamic content.
+- **Google integrations** – uses the Google APIs client to authenticate with OAuth2 and interact with Gmail and Google Sheets.
+- **Queue processing** – utilises BullMQ for job queues, with Bull Board providing a web UI (`/admin/queues`) to monitor queued tasks.
+- **Task scheduling** – exposes an admin endpoint to list and trigger cron jobs (`/admin/tasks`).
+- **Database ORM** – integrates [Prisma](https://www.prisma.io/) for database access and migrations.
+- **Rate limiting** – protects endpoints with NestJS’s throttling guard.
+- **Swagger documentation** – automatically generates OpenAPI docs available at `/docs` to explore and test the API.
 
-## Project setup
+## Getting Started
 
-```bash
-$ yarn install
+Follow these steps to set up a local development environment.
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 18+ and npm or yarn
+- [Redis](https://redis.io/) for BullMQ queues
+- A relational database supported by Prisma (e.g. PostgreSQL)
+
+You will also need AWS and Google service credentials to enable uploads and email features.
+
+### Installation
+
+1. Clone this repository and install dependencies:
+
+   ```sh
+   git clone https://github.com/Startust/starforge.git
+   cd starforge
+   npm install
+   # or
+   yarn
+   ```
+
+2. Generate the Prisma client and run database migrations:
+
+   ```sh
+   npm run prisma:generate
+   npm run prisma:migrate
+   ```
+
+### Environment Configuration
+
+Environment variables are loaded via `.env` files based on your `NODE_ENV` value.  Copy `.env.example` (or create your own) to configure the following variables:
+
+| Variable                  | Purpose                                        |
+|--------------------------|------------------------------------------------|
+| `DATABASE_URL`           | Database connection string for Prisma         |
+| `PORT`                   | Port for the HTTP server (default `4000`)      |
+| `REDIS_URL`              | Redis connection string for BullMQ queues      |
+| `AWS_REGION`             | AWS region for S3                              |
+| `AWS_ACCESS_KEY_ID`      | AWS access key                                 |
+| `AWS_SECRET_ACCESS_KEY`  | AWS secret key                                 |
+| `S3_BUCKET_NAME`         | Name of the S3 bucket for uploads              |
+| `UPLOAD_ROOT_PREFIX`     | Folder prefix for uploaded files (optional)    |
+| `GOOGLE_CLIENT_ID`       | OAuth client ID for Google APIs                |
+| `GOOGLE_CLIENT_SECRET`   | OAuth client secret for Google APIs            |
+| `GOOGLE_REFRESH_TOKEN`   | OAuth refresh token for server‑to‑server calls |
+| `GOOGLE_REDIRECT_URI`    | OAuth redirect URI (used for obtaining tokens) |
+| `GMAIL_FROM_EMAIL`       | Default sender email address                   |
+
+### Running the Server
+
+Start the development server with hot‑reloading:
+
+```sh
+npm run start:dev
+# or
+yarn start:dev
 ```
 
-## Compile and run the project
+The application will listen on `http://localhost:<PORT>` (default 4000).  Swagger documentation is available at `http://localhost:<PORT>/docs`.
 
-```bash
-# development
-$ yarn run start
+### Running Tests
 
-# watch mode
-$ yarn run start:dev
+Unit tests use Jest and ts‑jest:
 
-# production mode
-$ yarn run start:prod
+```sh
+npm run test
 ```
 
-## Run tests
+Use `npm run test:watch` to re‑run tests on file changes and `npm run test:cov` to generate coverage reports.
 
-```bash
-# unit tests
-$ yarn run test
+## Modules
 
-# e2e tests
-$ yarn run test:e2e
+The codebase is organised into several modules:
 
-# test coverage
-$ yarn run test:cov
+- **AppModule** – bootstraps the NestJS application and configures global middleware, interceptors and filters.
+- **UploadModule** – exposes `/upload/presign` and `/upload/meta` endpoints and uses the AWS SDK to generate pre‑signed S3 URLs and fetch object metadata.
+- **NotificationModule** – wraps the Gmail API and MJML template rendering to send email notifications.
+- **GoogleModule** – provides OAuth2 authentication and wrappers for Gmail and Google Sheets APIs.
+- **QueueModule** – configures BullMQ queues and the Bull Board dashboard at `/admin/queues` and defines the `email-queue` processor.
+- **TaskModule** – lists registered cron tasks and allows them to be triggered manually via `/admin/tasks`.
+- **WebhookModule** – placeholder for handling incoming webhooks.
+- **PrismaModule** – sets up the Prisma client for database access.
+
+## API Documentation
+
+The project uses `@nestjs/swagger` to generate an OpenAPI spec.  Once the server is running, visit:
+
+```
+http://localhost:<PORT>/docs
 ```
 
-## Deployment
+to explore available endpoints, models and response structures.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Contributing
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ yarn install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Contributions are welcome!  If you find an issue or have ideas for improvements, please open an issue or submit a pull request.  This project uses [eslint](https://eslint.org/), [Prettier](https://prettier.io/) and [husky](https://typicode.github.io/husky/#/) to enforce consistent code style.  Run `npm run lint` to check your changes before committing.
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is currently **UNLICENSED**.  If you wish to use the code outside your own study or evaluation, please contact the repository owner.
