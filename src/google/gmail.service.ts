@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { gmail_v1, google } from 'googleapis';
 
+import { GoogleAuthService } from './google-auth.service';
+
 import Gmail = gmail_v1.Gmail;
 
 @Injectable()
@@ -9,23 +11,17 @@ export class GmailService {
   private gmail: Gmail;
   private readonly fromEmail: string;
 
-  constructor(private configService: ConfigService) {
-    const CLIENT_ID = this.configService.get<string>('GOOGLE_CLIENT_ID');
-    const CLIENT_SECRET = this.configService.get<string>('GOOGLE_CLIENT_SECRET');
-    const REDIRECT_URI = this.configService.get<string>('GOOGLE_REDIRECT_URI');
-    const REFRESH_TOKEN = this.configService.get<string>('GOOGLE_REFRESH_TOKEN');
-    const fromEmail = this.configService.get<string>('GMAIL_FROM_EMAIL');
+  constructor(
+    private config: ConfigService,
+    private readonly googleAuth: GoogleAuthService,
+  ) {
+    const fromEmail = this.config.get<string>('GMAIL_FROM_EMAIL');
 
-    if (!CLIENT_ID || !CLIENT_SECRET || !REDIRECT_URI || !REFRESH_TOKEN || !fromEmail) {
-      console.warn('Google OAuth2 configuration is not fully defined');
+    if (!fromEmail) {
+      console.warn('GMAIL_FROM_EMAIL is not defined');
     }
 
-    const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
-
-    oauth2Client.setCredentials({
-      refresh_token: REFRESH_TOKEN,
-    });
-
+    const oauth2Client = this.googleAuth.getClient();
     this.gmail = google.gmail({ version: 'v1', auth: oauth2Client });
     this.fromEmail = fromEmail || '';
   }

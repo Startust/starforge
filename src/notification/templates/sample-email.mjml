@@ -1,0 +1,34 @@
+<mjml>
+    <mj-head>
+        <mj-title>Sample Email</mj-title>
+        <mj-preview>This is a sample email template.</mj-preview>
+        <mj-style inline="inline">
+            .header { font-size: 24px; font-weight: bold; color: #4a90e2; }
+            .content { font-size: 16px; color: #333333; }
+            .footer { font-size: 12px; color: #999999; text-align: center; }
+        </mj-style>
+    </mj-head>
+
+    <mj-body background-color="#f0f0f0">
+        <mj-section background-color="#ffffff" border-radius="8px" padding="20px">
+            <mj-column>
+                <mj-text css-class="header">
+                    Welcome to Our Service!
+                </mj-text>
+                <mj-text css-class="content">
+                    Hello,<br/><br/>
+                    Thank you for joining our platform. We're excited to have you on board! If you have any questions, feel free to reach out to our support team.<br/><br/>
+                    Best regards,<br/>
+                    The Team
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding="10px 20px 20px">
+            <mj-column>
+                <mj-text css-class="footer">
+                    © 2024 Our Service. All rights reserved.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

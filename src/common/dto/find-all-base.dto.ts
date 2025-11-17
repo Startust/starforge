@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsOptional, IsString, IsNumber, IsEnum, ValidateNested } from 'class-validator';
 
-import { TransformJsonArray } from '../utils/transform-json-array';
+import { TransformJsonArrayUtil } from '../util/transform-json-array.util';
 
 export class SortFieldDto {
   @IsString()
@@ -27,34 +27,14 @@ export class FindAllBaseDto {
   @Transform(({ value }: { value: string }) => (value === '' ? undefined : value))
   limit?: number = 20;
 
-  @ApiPropertyOptional({ default: 'createdAt' })
-  @IsOptional()
-  @IsString()
-  @Transform(({ value }: { value: string }) => (value === '' ? undefined : value))
-  sort?: string = 'createdAt'; // Default sorting field, can be overridden by the caller
-
-  @ApiPropertyOptional({ enum: ['asc', 'desc'], default: 'desc' })
-  @IsOptional()
-  @IsString()
-  @Transform(({ value }: { value: string }) => (value === '' ? undefined : value))
-  order?: 'asc' | 'desc' = 'desc';
-
   @ApiPropertyOptional({
     description: 'Sort by multiple fields, e.g., [{ field: "createdAt", order: "desc" }]',
     type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        field: { type: 'string' },
-        order: { type: 'string', enum: ['asc', 'desc'] },
-      },
-    },
-    example: [{ field: 'createdAt', order: 'desc' }],
   })
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => SortFieldDto)
-  @TransformJsonArray(SortFieldDto)
+  @TransformJsonArrayUtil(SortFieldDto)
   sortBy?: SortFieldDto[];
 
   @ApiPropertyOptional()

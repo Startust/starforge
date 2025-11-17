@@ -1,11 +1,12 @@
 import { Global, Module } from '@nestjs/common';
 
-import { GmailService } from './gmail.service';
 import { NotificationService } from './notification.service';
+import { GoogleModule } from '../google/google.module';
 
 @Global()
 @Module({
-  providers: [NotificationService, GmailService],
-  exports: [NotificationService, GmailService],
+  imports: [GoogleModule],
+  providers: [NotificationService],
+  exports: [NotificationService],
 })
 export class NotificationModule {}

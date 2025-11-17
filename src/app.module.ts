@@ -6,11 +6,15 @@ import * as process from 'node:process';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AwsModule } from './aws/aws.module';
+import { GoogleModule } from './google/google.module';
 import { NotificationModule } from './notification/notification.module';
 import { NotificationService } from './notification/notification.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
 import { QueueModule } from './queue/queue.module';
+import { TaskModule } from './task/task.module';
+import { UploadModule } from './upload/upload.module';
 import { WebhookModule } from './webhook/webhook.module';
 
 @Module({
@@ -35,6 +39,10 @@ import { WebhookModule } from './webhook/webhook.module';
     NotificationModule,
     QueueModule,
     WebhookModule,
+    GoogleModule,
+    AwsModule,
+    UploadModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [
